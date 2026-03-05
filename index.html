@@ -8,16 +8,16 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root { --gold: #d4af37; --dark: #0f0f0f; --glass: rgba(255, 255, 255, 0.05); }
+        :root { --gold: #d4af37; --dark: #0f0f0f; --glass: rgba(255, 255, 255, 0.1); }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             background: radial-gradient(circle at center, #1a0b0b, #000000);
             height: 100vh; display: flex; justify-content: center; align-items: center;
             font-family: 'Playfair Display', serif; overflow: hidden; color: #fff;
+            position: fixed; width: 100%; /* Mencegah seluruh halaman goyang saat scroll box */
         }
 
-        /* Background Animasi */
         .particles { position: absolute; width: 100%; height: 100%; z-index: 0; }
         .particle { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0.3; animation: floatUp 10s infinite linear; }
         @keyframes floatUp {
@@ -25,7 +25,6 @@
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
 
-        /* Overlay */
         #start-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 1000; display: flex; flex-direction: column;
@@ -37,48 +36,54 @@
             cursor: pointer; font-family: 'Great Vibes', cursive; box-shadow: 0 0 15px var(--gold);
         }
 
-        /* Card */
         .card {
             background: var(--glass); backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 20px;
-            padding: 25px; text-align: center; max-width: 400px; width: 92%;
-            z-index: 10; opacity: 0; transform: scale(0.8); transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 20px; text-align: center; max-width: 380px; width: 90%;
+            z-index: 10; opacity: 0; transform: scale(0.8); transition: 1.2s;
         }
         .card.visible { opacity: 1; transform: scale(1); }
 
-        .photo-frame { width: 130px; height: 130px; margin: 0 auto 15px; border-radius: 50%; border: 3px solid var(--gold); padding: 4px; }
+        .photo-frame { width: 110px; height: 110px; margin: 0 auto 10px; border-radius: 50%; border: 2px solid var(--gold); padding: 3px; }
         .photo-frame img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
-        h1 { font-family: 'Great Vibes', cursive; font-size: 2.8rem; color: var(--gold); margin-bottom: 5px; }
+        h1 { font-family: 'Great Vibes', cursive; font-size: 2.5rem; color: var(--gold); margin-bottom: 5px; }
 
-        /* BOX PESAN DENGAN SCROLL */
+        /* PERBAIKAN SCROLL HP */
         .message-box { 
-            background: rgba(0,0,0,0.5); 
+            background: rgba(0,0,0,0.6); 
             padding: 15px; 
             border-radius: 12px; 
             margin: 15px 0; 
-            max-height: 180px; /* Tinggi maksimal kotak */
-            overflow-y: auto;  /* Munculkan scroll jika teks panjang */
+            height: 160px; /* Tinggi tetap agar scroll konsisten */
+            overflow-y: scroll; /* Paksa scroll muncul */
+            -webkit-overflow-scrolling: touch; /* Scroll halus di iPhone/HP */
             text-align: left; 
             border-left: 3px solid var(--gold);
-            scrollbar-width: thin; /* Untuk Firefox */
-            scrollbar-color: var(--gold) transparent;
+            position: relative;
+            z-index: 20;
         }
 
-        /* Gaya Scrollbar untuk Chrome/Safari */
         .message-box::-webkit-scrollbar { width: 4px; }
         .message-box::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
 
-        #typing-text { font-style: italic; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; }
+        #typing-text { 
+            font-style: italic; 
+            line-height: 1.7; 
+            font-size: 0.95rem; 
+            white-space: pre-wrap; 
+            padding-bottom: 20px; /* Ruang ekstra di bawah teks */
+        }
 
-        .btn-love { background: linear-gradient(45deg, #d4af37, #f9f295); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-love { background: linear-gradient(45deg, #d4af37, #f9f295); color: #000; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div id="start-overlay">
-        <h2 style="color:var(--gold); margin-bottom:20px; font-family: 'Playfair Display';">A Special Gift for You</h2>
-        <button class="start-btn" onclick="startSurprise()">Open with Love ❤️</button>
+        <h2 style="color:var(--gold); margin-bottom:20px;">A Gift for You</h2>
+        <button class="start-btn" onclick="startSurprise()">Open ❤️</button>
     </div>
 
     <audio id="mySong" src="musik.mp3" preload="auto" loop></audio>
@@ -87,28 +92,23 @@
 
     <div class="card" id="main-card">
         <div class="photo-frame">
-            <img src="https://i.imgur.com/28I8Qvo.jpeg" alt="Our Moment">
+            <img src="https://i.imgur.com/28I8Qvo.jpeg" alt="Love">
         </div>
-        
         <h1>Happy Birthday</h1>
-        
         <div class="message-box" id="scroll-box">
             <p id="typing-text"></p>
         </div>
-        
         <button class="btn-love" onclick="makeConfetti()">I Love You ❤️</button>
-        
-        <p style="margin-top: 20px; font-family: 'Great Vibes', cursive; color: var(--gold); font-size: 1.2rem;">✨ Forever & Always ✨</p>
+        <p style="margin-top: 15px; font-family: 'Great Vibes', cursive; color: var(--gold); font-size: 1.1rem;">✨ Forever & Always ✨</p>
     </div>
 
     <script>
         function createParticles() {
             const container = document.getElementById('particle-container');
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 25; i++) {
                 const p = document.createElement('div');
                 p.className = 'particle';
-                const size = Math.random() * 4 + 2;
-                p.style.width = size + 'px'; p.style.height = size + 'px';
+                p.style.width = '3px'; p.style.height = '3px';
                 p.style.left = Math.random() * 100 + 'vw';
                 p.style.animationDuration = (Math.random() * 5 + 5) + 's';
                 container.appendChild(p);
@@ -120,16 +120,12 @@
             setTimeout(() => {
                 document.getElementById('start-overlay').style.display = 'none';
                 document.getElementById('main-card').classList.add('visible');
-                
-                const lagu = document.getElementById('mySong');
-                lagu.play();
-                
+                document.getElementById('mySong').play();
                 typeWriter();
                 makeConfetti();
             }, 1000);
         }
 
-        // PESAN PANJANG KAMU
         const message = "Selamat ulang tahun ya. ❤️\n\nHari ini mungkin cuma hari di mana umurmu bertambah satu tahun, tapi buatku hari ini adalah hari di mana seseorang yang sangat berharga lahir ke dunia.\n\nAku berdoa semoga Allah selalu menjaga kamu, memberi kesehatan, kebahagiaan, dan mempermudah setiap langkah yang kamu jalani. Semoga semua yang kamu impikan perlahan menjadi nyata, dan hidupmu selalu dipenuhi hal-hal baik.\n\nAku mungkin belum jadi orang yang paling dekat di hidupmu. Tapi percayalah, kamu adalah salah satu orang yang selalu aku sebut dalam doa. Semoga di setiap langkahmu selalu ada kebahagiaan.\n\nDan kalau suatu hari nanti Allah mengizinkan, semoga aku bisa jadi seseorang yang berjalan di sampingmu, bukan hanya mendoakanmu dari jauh.\n\nSekali lagi, selamat ulang tahun. Semoga hari ini penuh senyum, dan semoga aku bisa jadi salah satu alasan kamu tersenyum hari ini. 🤍✨ 🌙✨";
 
         let i = 0;
@@ -141,15 +137,18 @@
                 textElem.innerHTML += message.charAt(i);
                 i++;
                 
-                // Auto scroll ke bawah saat mengetik
-                scrollBox.scrollTop = scrollBox.scrollHeight;
+                // Perbaikan auto-scroll untuk mobile
+                scrollBox.scrollTo({
+                    top: scrollBox.scrollHeight,
+                    behavior: 'smooth'
+                });
                 
-                setTimeout(typeWriter, 40);
+                setTimeout(typeWriter, 45);
             }
         }
 
         function makeConfetti() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4af37', '#ffffff'] });
+            confetti({ particleCount: 100, spread: 60, origin: { y: 0.7 }, colors: ['#d4af37', '#ffffff'] });
             document.getElementById('mySong').play();
         }
 
