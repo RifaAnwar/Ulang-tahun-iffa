@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love ❤️</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root { 
+            --gold: #d4af37; 
+            --dark: #0f0f0f; 
+            --glass: rgba(255, 255, 255, 0.05); 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: radial-gradient(circle at center, #1a0b0b, #000000);
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-family: 'Playfair Display', serif; 
+            overflow: hidden; 
+            color: #fff;
+        }
+
+        /* Partikel Cahaya */
+        .particles { position: absolute; width: 100%; height: 100%; z-index: 0; }
+        .particle { position: absolute; background: var(--gold); border-radius: 50%; opacity: 0.3; animation: floatUp 10s infinite linear; }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* Overlay Pembuka */
+        #start-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 1000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; transition: 1s ease;
+        }
+
+        .start-btn {
+            padding: 15px 40px; 
+            font-size: 1.5rem; 
+            background: transparent;
+            color: var(--gold); 
+            border: 2px solid var(--gold); 
+            border-radius: 50px;
+            cursor: pointer; 
+            font-family: 'Great Vibes', cursive; 
+            box-shadow: 0 0 15px var(--gold);
+            transition: 0.3s;
+        }
+
+        .start-btn:hover { background: var(--gold); color: #000; }
+
+        /* Kartu Utama */
+        .card {
+            background: var(--glass); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3); 
+            border-radius: 20px;
+            padding: 35px; 
+            text-align: center; 
+            max-width: 400px; 
+            width: 90%;
+            z-index: 10; 
+            opacity: 0; 
+            transform: scale(0.8); 
+            transition: 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card.visible { opacity: 1; transform: scale(1); }
+
+        /* Bingkai Foto Personal */
+        .photo-frame { 
+            width: 160px; 
+            height: 160px; 
+            margin: 0 auto 25px; 
+            border-radius: 50%; 
+            border: 3px solid var(--gold); 
+            padding: 5px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .photo-frame img { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            background: #222; /* Placeholder jika foto belum muncul */
+        }
+
+        h1 { 
+            font-family: 'Great Vibes', cursive; 
+            font-size: 3.2rem; 
+            color: var(--gold); 
+            margin-bottom: 10px;
+        }
+
+        .message-box { 
+            background: rgba(0,0,0,0.4); 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin: 20px 0; 
+            font-style: italic; 
+            font-size: 1.05rem; 
+            text-align: left; 
+            line-height: 1.6;
+            border-left: 4px solid var(--gold); 
+        }
+
+        .btn-love { 
+            background: linear-gradient(45deg, #d4af37, #f9f295); 
+            color: #000; 
+            border: none; 
+            padding: 12px 25px; 
+            border-radius: 25px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="start-overlay">
+        <h2 style="color:var(--gold); margin-bottom:25px; font-weight: normal;">A Special Message for You</h2>
+        <button class="start-btn" onclick="startSurprise()">Open with Love ❤️</button>
+    </div>
+
+    <audio id="mySong" src="musik.mp3" preload="auto" loop></audio>
+
+    <div class="particles" id="particle-container"></div>
+
+    <div class="card" id="main-card">
+        <div class="photo-frame">
+            <img src="foto.jpg" alt="Our Moment">
+        </div>
+        
+        <p style="letter-spacing: 3px; font-size: 0.8rem; color: #bbb; text-transform: uppercase;">To My Everything</p>
+        <h1>Happy Birthday</h1>
+        
+        <div class="message-box">
+            <p id="typing-text"></p>
+        </div>
+        
+        <button class="btn-love" onclick="makeConfetti()">I Love You ❤️</button>
+        
+        <p style="margin-top: 25px; font-family: 'Great Vibes', cursive; color: var(--gold); font-size: 1.3rem;">
+            ✨ Forever & Always ✨
+        </p>
+    </div>
+
+    <script>
+        function createParticles() {
+            const container = document.getElementById('particle-container');
+            for (let i = 0; i < 35; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                p.style.width = size + 'px'; p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDuration = (Math.random() * 6 + 5) + 's';
+                p.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(p);
+            }
+        }
+
+        function startSurprise() {
+            document.getElementById('start-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('start-overlay').style.display = 'none';
+                document.getElementById('main-card').classList.add('visible');
+                
+                // Mainkan Musik
+                const lagu = document.getElementById('mySong');
+                lagu.play().catch(e => console.log("Autoplay blocked. Klik tombol Love untuk mencoba lagi."));
+                
+                typeWriter();
+                makeConfetti();
+            }, 1000);
+        }
+
+        const message = "Selamat ulang tahun, sayang... ❤️ Di hari yang spesial ini, aku hanya ingin kamu tahu betapa berartinya kehadiranmu dalam hidupku. Terima kasih telah menjadi alasan di balik setiap senyumku. Semoga harimu penuh kebahagiaan, persis seperti kebahagiaan yang kamu berikan padaku. I love you to the moon and back! 🌙✨";
+        let i = 0;
+        function typeWriter() {
+            if (i < message.length) {
+                document.getElementById("typing-text").innerHTML += message.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+
+        function makeConfetti() {
+            confetti({ 
+                particleCount: 150, 
+                spread: 70, 
+                origin: { y: 0.6 }, 
+                colors: ['#d4af37', '#ffffff', '#f9f295'] 
+            });
+            // Pastikan lagu berputar jika tadi sempat terblokir browser
+            document.getElementById('mySong').play();
+        }
+
+        createParticles();
+    </script>
+</body>
+</html>
